@@ -1,10 +1,19 @@
 package com.example.demo.model;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +31,11 @@ import lombok.Setter;
 @Data
 public class Student {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long studentId;
+	
+	@Column(unique = true)
+	private String registrationNumber;
 	private String firstName;
 	private String lastName;
 	private String middleName;
@@ -31,7 +44,7 @@ public class Student {
 	private String permanentAddress;
 	private String currentAddress;
 	@Column(unique = true)
-	private String email;
+	protected String email;
 	private String tenthPercentage;
 	private String thenthSchoolName;
 	private String thenthSchoolAddress;
@@ -49,5 +62,15 @@ public class Student {
 	private LocalDate admissionDate;
 	private LocalDate appliedDate;
 	private String password;
+	
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "STUDENT_ROLE",
+	joinColumns = {
+			@JoinColumn(name = "studentId", referencedColumnName = "studentId")
+	},
+	inverseJoinColumns = {
+			@JoinColumn(name = "ROLE_ID", referencedColumnName = "roleId")
+	})
+	private Set<Role> role;
 
 }

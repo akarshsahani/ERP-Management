@@ -1,8 +1,10 @@
 package com.example.demo.model;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,18 +21,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@Data
-public class StudentApplicant {
+public class Employee {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long studentApplicantId;
+	private Long employeeId;
+	
 	private String firstName;
 	private String lastName;
 	private String middleName;
@@ -38,30 +41,23 @@ public class StudentApplicant {
 	private String phoneNumber;
 	private String permanentAddress;
 	private String currentAddress;
-	public String email;
-	private String tenthPercentage;
-	private String tenthSchoolName;
-	private String tenthSchoolAddress;
-	private String tenthYearPassed;
-	private String twelvethPercentage;
-	private String twelvethSchoolName;
-	private String twelvethSchoolAddress;
-	private String twelvethYearPassed;
-	private String branch;
-	private String programme;
-	private String batch;
-	private String currentStatus;
+	
+	@Column(unique = true)
+	protected String email;
+	
+	private LocalDate joinigDate;
 	private LocalDate appliedDate;
-	public String password;
+	private String password;
+	private HashMap<String, String> qualification;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "STUDENT_APPLICANT_ROLE",
+	@JoinTable(name = "employee_role",
 	joinColumns = {
-			@JoinColumn(name = "studentApplicantId", referencedColumnName = "studentApplicantId")
+			@JoinColumn(name = "employeeId")
 	},
 	inverseJoinColumns = {
-			@JoinColumn(name = "ROLE_ID", referencedColumnName = "roleId")
+			@JoinColumn(name = "ROLE_ID")
 	})
-	public Set<Role> role;
+	private Set<Role> role;
 
 }
