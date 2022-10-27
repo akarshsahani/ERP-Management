@@ -30,6 +30,7 @@ import lombok.Setter;
 @Setter
 @Data
 public class Student {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long studentId;
@@ -46,8 +47,8 @@ public class Student {
 	@Column(unique = true)
 	protected String email;
 	private String tenthPercentage;
-	private String thenthSchoolName;
-	private String thenthSchoolAddress;
+	private String tenthSchoolName;
+	private String tenthSchoolAddress;
 	private String tenthYearPassed;
 	private String twelvethPercentage;
 	private String twelvethSchoolName;

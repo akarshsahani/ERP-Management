@@ -20,13 +20,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
+
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@Data
 public class StudentApplicant {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
