@@ -28,11 +28,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Employee {
-	
+public class EmployeeApplicant {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long employeeId;
+	private Long employeeApplicantId;
 	
 	private String firstName;
 	private String lastName;
@@ -45,7 +45,6 @@ public class Employee {
 	@Column(unique = true)
 	protected String email;
 	
-	private LocalDate joiningDate;
 	private LocalDate appliedDate;
 	private String password;
 	private HashMap<String, String> qualification;
@@ -54,13 +53,14 @@ public class Employee {
 	private String designation;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "employee_role",
+	@JoinTable(name = "employee_applicant_role",
 	joinColumns = {
-			@JoinColumn(name = "employeeId")
+			@JoinColumn(name = "employeeApplicantId")
 	},
 	inverseJoinColumns = {
 			@JoinColumn(name = "ROLE_ID")
 	})
 	private Set<Role> role;
 
+	
 }

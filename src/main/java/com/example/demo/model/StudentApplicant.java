@@ -54,6 +54,7 @@ public class StudentApplicant {
 	private String currentStatus;
 	private LocalDate appliedDate;
 	public String password;
+	private String category;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "STUDENT_APPLICANT_ROLE",

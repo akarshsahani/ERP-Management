@@ -16,7 +16,7 @@ public interface StudentApplicantRepository extends JpaRepository<StudentApplica
 	@Modifying
 	@Transactional
 	@Query(value = "UPDATE student_applicant SET current_status = ?1 WHERE student_applicant_id = ?2 ",  nativeQuery = true)
-	public void updateStatusAndRoleOfStudentApplicant(String currentStatus, Long id);
+	public void updateStatuOfStudentApplicant(String currentStatus, Long id);
 
 	StudentApplicant findByStudentApplicantId(Long id);
 

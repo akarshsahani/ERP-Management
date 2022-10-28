@@ -1,7 +1,7 @@
 package com.example.demo.model;
 
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -28,12 +28,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Employee {
-	
+public class Teacher {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long employeeId;
-	
+	private Long teacherId;
 	private String firstName;
 	private String lastName;
 	private String middleName;
@@ -41,26 +40,43 @@ public class Employee {
 	private String phoneNumber;
 	private String permanentAddress;
 	private String currentAddress;
-	
 	@Column(unique = true)
 	protected String email;
-	
+	private String tenthPercentage;
+	private String tenthSchoolName;
+	private String tenthSchoolAddress;
+	private String tenthYearPassed;
+	private String twelvethPercentage;
+	private String twelvethSchoolName;
+	private String twelvethSchoolAddress;
+	private String twelvethYearPassed;
+	private String bachelorPercentage;
+	private String bachelorSchoolName;
+	private String bachelorSchoolAddress;
+	private String bachelorBranch;
+	private String bachelorProgramme;
+	private String bachelorYearPassed;
+	private String mastersSchoolName;
+	private String mastersSchoolAddress;
+	private String mastersPercentage;
+	private String mastersBranch;
+	private String mastersProgramme;
+	private String mastersYearPassed;
+	private Map<String, String> otherQualifications; 
 	private LocalDate joiningDate;
 	private LocalDate appliedDate;
 	private String password;
-	private HashMap<String, String> qualification;
 	private String category;
-	private String currentStatus;
 	private String designation;
+	private String currentStatus;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "employee_role",
+	@JoinTable(name = "TEACHER_ROLE",
 	joinColumns = {
-			@JoinColumn(name = "employeeId")
+			@JoinColumn(name = "teacherId", referencedColumnName = "teacherId")
 	},
 	inverseJoinColumns = {
-			@JoinColumn(name = "ROLE_ID")
+			@JoinColumn(name = "ROLE_ID", referencedColumnName = "roleId")
 	})
 	private Set<Role> role;
-
 }

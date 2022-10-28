@@ -55,6 +55,17 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
+    
+    public String createTokenForPasswordReset(Map<String, Object> claims, String subject) {
+    	String sub = subject != null ? subject : "";
+        return Jwts.builder()
+        		.setClaims(claims)
+        		.setSubject(sub)
+        		.setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 600000))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
+    }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);

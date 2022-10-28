@@ -20,5 +20,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 	
 	@Query(value = "SELECT student_id FROM student WHERE email = ?1", nativeQuery = true)
 	public Long returnStudentId(String email);
+	
+	
 
 }

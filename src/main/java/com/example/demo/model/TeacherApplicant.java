@@ -1,7 +1,7 @@
 package com.example.demo.model;
 
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Entity
 @Data
 @Getter
@@ -28,12 +29,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Employee {
+public class TeacherApplicant {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long employeeId;
-	
+	private Long teacherApplicantId;
 	private String firstName;
 	private String lastName;
 	private String middleName;
@@ -44,22 +44,40 @@ public class Employee {
 	
 	@Column(unique = true)
 	protected String email;
-	
-	private LocalDate joiningDate;
+	private String tenthPercentage;
+	private String tenthSchoolName;
+	private String tenthSchoolAddress;
+	private String tenthYearPassed;
+	private String twelvethPercentage;
+	private String twelvethSchoolName;
+	private String twelvethSchoolAddress;
+	private String twelvethYearPassed;
+	private String bachelorPercentage;
+	private String bachelorSchoolName;
+	private String bachelorSchoolAddress;
+	private String bachelorBranch;
+	private String bachelorProgramme;
+	private String bachelorYearPassed;
+	private String mastersSchoolName;
+	private String mastersSchoolAddress;
+	private String mastersPercentage;
+	private String mastersBranch;
+	private String mastersProgramme;
+	private String mastersYearPassed;
 	private LocalDate appliedDate;
 	private String password;
-	private HashMap<String, String> qualification;
 	private String category;
-	private String currentStatus;
 	private String designation;
+	private Map<String, String> otherQualifications; 
+	private String currentStatus;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "employee_role",
+	@JoinTable(name = "TEACHER_APPLICANT_ROLE",
 	joinColumns = {
-			@JoinColumn(name = "employeeId")
+			@JoinColumn(name = "teacherApplicantId", referencedColumnName = "teacherApplicantId")
 	},
 	inverseJoinColumns = {
-			@JoinColumn(name = "ROLE_ID")
+			@JoinColumn(name = "ROLE_ID", referencedColumnName = "roleId")
 	})
 	private Set<Role> role;
 

@@ -41,7 +41,7 @@ public class StudentApplicantServices {
 	public String newStudentApplicant(StudentApplicantRequest studentApplicantRequest) {
 		
 		Role role = roleRepository.findByRoleName("APPLICANT");
-		System.out.println(role);
+//		System.out.println(role);
 		Set<Role> roles = new HashSet<>();
 		roles.add(role);
 		
@@ -65,7 +65,8 @@ public class StudentApplicantServices {
 														.branch(studentApplicantRequest.getBranch())
 														.programme(studentApplicantRequest.getProgramme())
 														.batch(studentApplicantRequest.getBatch())
-														.currentStatus("Submitted")
+														.currentStatus("applicant")
+														.category("student")
 														.role(roles)
 														.appliedDate(LocalDate.now())
 														.build();

@@ -44,8 +44,10 @@ public class Student {
 	private String phoneNumber;
 	private String permanentAddress;
 	private String currentAddress;
+	
 	@Column(unique = true)
 	protected String email;
+	
 	private String tenthPercentage;
 	private String tenthSchoolName;
 	private String tenthSchoolAddress;
@@ -63,6 +65,7 @@ public class Student {
 	private LocalDate admissionDate;
 	private LocalDate appliedDate;
 	private String password;
+	private String category;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "STUDENT_ROLE",
