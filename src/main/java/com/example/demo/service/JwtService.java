@@ -67,45 +67,45 @@ public class JwtService implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
-		if (studentRepository.findByEmail(username) != null) {
-			Student student = studentRepository.findByEmail(username);
+		if (studentRepository.findByOfficialEmail(username) != null ) {
+			Student student = studentRepository.findByOfficialEmail(username);
 			return new org.springframework.security.core.userdetails.User(
-					student.getEmail(),
+					student.getOfficialEmail(),
 					student.getPassword(),
 					getStudentAuthorities(student));
 		}
-		else if (teacherRepository.findByEmail(username) != null) {
-			Teacher teacher = teacherRepository.findByEmail(username);
+		else if (teacherRepository.findByOfficialEmail(username) != null ) {
+			Teacher teacher = teacherRepository.findByOfficialEmail(username);
 			return new org.springframework.security.core.userdetails.User(
-					teacher.getEmail(),
+					teacher.getOfficialEmail(),
 					teacher.getPassword(),
 					getTeacherAuthorities(teacher));
 		}
-		else if (employeeRepository.findByEmail(username) != null) {
-			Employee employee = employeeRepository.findByEmail(username);
+		else if (employeeRepository.findByOfficialEmail(username) != null ) {
+			Employee employee = employeeRepository.findByOfficialEmail(username);
 			return new org.springframework.security.core.userdetails.User(
-					employee.getEmail(),
+					employee.getOfficialEmail(),
 					employee.getPassword(),
 					getEmployeeAuthorities(employee));
 		}
-		else if (studentApplicantRepository.findByEmail(username) != null) {
-			StudentApplicant studentApplicant = studentApplicantRepository.findByEmail(username);
+		else if (studentApplicantRepository.findByPersonalEmail(username) != null) {
+			StudentApplicant studentApplicant = studentApplicantRepository.findByPersonalEmail(username);
 			return new org.springframework.security.core.userdetails.User(
-					studentApplicant.getEmail(),
+					studentApplicant.getPersonalEmail(),
 					studentApplicant.getPassword(),
 					getStudentApplicantAuthorities(studentApplicant));
 		}
-		else if (teacherApplicantRepository.findByEmail(username) != null) {
-			TeacherApplicant teacherApplicant = teacherApplicantRepository.findByEmail(username);
+		else if (teacherApplicantRepository.findByPersonalEmail(username) != null) {
+			TeacherApplicant teacherApplicant = teacherApplicantRepository.findByPersonalEmail(username);
 			return new org.springframework.security.core.userdetails.User(
-					teacherApplicant.getEmail(),
+					teacherApplicant.getPersonalEmail(),
 					teacherApplicant.getPassword(),
 					getTeacherApplicantAuthorities(teacherApplicant));
 		}
-		else if (employeeApplicantRepository.findByEmail(username) != null) {
-			EmployeeApplicant employeeApplicant = employeeApplicantRepository.findByEmail(username);
+		else if (employeeApplicantRepository.findByPersonalEmail(username) != null) {
+			EmployeeApplicant employeeApplicant = employeeApplicantRepository.findByPersonalEmail(username);
 			return new org.springframework.security.core.userdetails.User(
-					employeeApplicant.getEmail(),
+					employeeApplicant.getPersonalEmail(),
 					employeeApplicant.getPassword(),
 					getEmployeeApplicantAuthorities(employeeApplicant));
 		}

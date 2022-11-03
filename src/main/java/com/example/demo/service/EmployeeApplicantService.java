@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.request.Education;
 import com.example.demo.dto.request.EmployeeApplicantRequest;
 import com.example.demo.dto.request.LogInRequest;
 import com.example.demo.dto.response.EmployeeApplicantLoginResponse;
@@ -39,19 +40,24 @@ public class EmployeeApplicantService {
 	private JwtService jwtService;
 	
 	EmployeeApplicant employeeApplicant = new EmployeeApplicant();
+	Education education = new Education();
 	
 	public String newEmployeeApplicant (EmployeeApplicantRequest employeeApplicantRequest) throws MessagingException {
 		
 		Role role = roleRepository.findByRoleName("APPLICANT");
-		System.out.println(role);
 		Set<Role> roles = new HashSet<>();
 		roles.add(role);
+		
+//		Education education = util.addNewEducationalQualificatin(employeeApplicantRequest.getQualification());
+//		Set<Education> edu = new HashSet<>();
+//		edu.add(education);
+		
 		
 		employeeApplicant = EmployeeApplicant.builder()
 											 .firstName(employeeApplicantRequest.getFirstName())
 											 .middleName(employeeApplicantRequest.getMiddleName())
 											 .lastName(employeeApplicantRequest.getLastName())
-											 .email(employeeApplicantRequest.getEmail())
+											 .personalEmail(employeeApplicantRequest.getEmail())
 											 .password(passwordEncoder.encode(employeeApplicantRequest.getPassword()))
 											 .dateOfBirth(util.stringToDate(employeeApplicantRequest.getDateOfBirth()))
 											 .phoneNumber(employeeApplicantRequest.getPhoneNumber())
@@ -60,7 +66,7 @@ public class EmployeeApplicantService {
 											 .category("employee")
 											 .currentStatus("Applicant")
 											 .designation(employeeApplicantRequest.getDesignation())
-											 .qualification(employeeApplicantRequest.getQualification())
+//											 .qualification(employeeApplicantRequest.getQualification())
 											 .appliedDate(LocalDate.now())
 											 .role(roles)
 											 .build();
@@ -69,22 +75,28 @@ public class EmployeeApplicantService {
 		return "Application Submitted Successfully! You can login to check your status.";
 	}
 	
+	
+	
 	public EmployeeApplicantLoginResponse employeeApplicantLogin(LogInRequest logInRequest) throws Exception {
-		String jwtToken = jwtService.createJwtToken(logInRequest);
-		EmployeeApplicant employeeApplicant = employeeApplicantRepository.findByEmail(logInRequest.getEmail());
+		EmployeeApplicant employeeApplicant = employeeApplicantRepository.findByPersonalEmail(logInRequest.getEmail());
+		if(employeeApplicant != null){
+			String jwtToken = jwtService.createJwtToken(logInRequest);
+			if(employeeApplicant.getCurrentStatus().equalsIgnoreCase("employee")) {
+				String message = "Application approved. Please Login to employee portal.";
+				return new EmployeeApplicantLoginResponse(employeeApplicant, jwtToken, message);
+			}
+			else {
+				String message = "Application Submitted Successfully. Please wait until approved.";
+				return new EmployeeApplicantLoginResponse(employeeApplicant, jwtToken, message);
+			}
+		}else {
+			return new EmployeeApplicantLoginResponse(employeeApplicant, null, "Email not registered.");
+		}
 		
-		if(employeeApplicant.getCurrentStatus().equalsIgnoreCase("employee")) {
-			String message = "Application approved. Please Login to employee portal.";
-			return new EmployeeApplicantLoginResponse(employeeApplicant, jwtToken, message);
-		}
-		else {
-			String message = "Application Submitted Successfully. Please wait until approved.";
-			return new EmployeeApplicantLoginResponse(employeeApplicant, jwtToken, message);
-		}
 		
 	}
 	
 	public EmployeeApplicant employeeApplicantDetail(Principal principal) {
-		return employeeApplicantRepository.findByEmail(principal.getName());
+		return employeeApplicantRepository.findByPersonalEmail(principal.getName());
 	}
 }

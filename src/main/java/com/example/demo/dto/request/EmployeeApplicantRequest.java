@@ -1,6 +1,6 @@
 package com.example.demo.dto.request;
 
-import java.util.HashMap;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,8 +26,8 @@ public class EmployeeApplicantRequest {
 	private String currentAddress;
 	private String email;
 	private String password;
-	private HashMap<String, String> qualification;
-	private String currentStatus;
+//	private Set<Education> qualification;
+//	private String currentStatus;
 	private String designation;
 	
 }

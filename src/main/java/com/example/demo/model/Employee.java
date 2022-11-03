@@ -1,7 +1,6 @@
 package com.example.demo.model;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -43,12 +42,15 @@ public class Employee {
 	private String currentAddress;
 	
 	@Column(unique = true)
-	protected String email;
+	protected String personalEmail;
+	
+	@Column(unique = true)
+	private String officialEmail;
 	
 	private LocalDate joiningDate;
 	private LocalDate appliedDate;
 	private String password;
-	private HashMap<String, String> qualification;
+//	private Set<Education> qualification;
 	private String category;
 	private String currentStatus;
 	private String designation;

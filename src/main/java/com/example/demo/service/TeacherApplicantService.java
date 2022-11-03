@@ -2,6 +2,10 @@ package com.example.demo.service;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,7 +14,9 @@ import org.springframework.stereotype.Service;
 import com.example.demo.dto.request.LogInRequest;
 import com.example.demo.dto.request.TeacherApplicantRequest;
 import com.example.demo.dto.response.TeacherApplicantLoginResponse;
+import com.example.demo.model.Role;
 import com.example.demo.model.TeacherApplicant;
+import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.TeacherApplicantRepository;
 import com.example.demo.util.Util;
 
@@ -29,13 +35,21 @@ public class TeacherApplicantService {
 	@Autowired
 	private JwtService jwtService;
 	
-	public String newTeacherApplicant (TeacherApplicantRequest teacherApplicantRequest) {
-		TeacherApplicant teacherApplicant = new TeacherApplicant();
+	@Autowired
+	private RoleRepository roleRepository;
+	TeacherApplicant teacherApplicant = new TeacherApplicant();
+	public String newTeacherApplicant (TeacherApplicantRequest teacherApplicantRequest) throws MessagingException {
+		
+		
+		Role role = roleRepository.findByRoleName("APPLICANT");
+		Set<Role> roles = new HashSet<>();
+		roles.add(role);
+		
 		teacherApplicant = TeacherApplicant.builder()
 										   .firstName(teacherApplicantRequest.getFirstName())
 										   .middleName(teacherApplicantRequest.getMiddleName())
 										   .lastName(teacherApplicantRequest.getLastName())
-										   .email(teacherApplicantRequest.getEmail())
+										   .personalEmail(teacherApplicantRequest.getEmail())
 										   .password(passwordEncoder.encode(teacherApplicantRequest.getPassword()))
 										   .dateOfBirth(util.stringToDate(teacherApplicantRequest.getDateOfBirth()))
 										   .phoneNumber(teacherApplicantRequest.getPhoneNumber())
@@ -64,29 +78,33 @@ public class TeacherApplicantService {
 										   .appliedDate(LocalDate.now())
 										   .category("teacher")
 										   .currentStatus("applicant")
+										   .role(roles)
 										   .designation(teacherApplicantRequest.getDesignation())
-										   .otherQualifications(teacherApplicantRequest.getOtherQualifications())
+//										   .otherQualifications(teacherApplicantRequest.getOtherQualifications())
 										   .build();
 		teacherApplicantRepository.save(teacherApplicant);
-		return "Application Submitted. Please login to applicant portel to check status.";
+		util.sendMailWithOutAttachment(teacherApplicantRequest.getEmail(), "Application Submitted. Please login to applicant portal to check status.", "Application Submitted.");
+		return "Application Submitted. Please login to applicant portal to check status.";
 	}
 	
 	public TeacherApplicantLoginResponse teacherApplicantLogin(LogInRequest logInRequest) throws Exception {
-		String jwtToken = jwtService.createJwtToken(logInRequest);
-		TeacherApplicant teacherApplicant = teacherApplicantRepository.findByEmail(logInRequest.getEmail());
-		
-		if(teacherApplicant.getCurrentStatus().equalsIgnoreCase("employee")) {
-			String message = "Application approved. Please Login to teacher portal.";
-			return new TeacherApplicantLoginResponse(teacherApplicant, jwtToken, message);
+		TeacherApplicant teacherApplicant = teacherApplicantRepository.findByPersonalEmail(logInRequest.getEmail());
+		if(teacherApplicant != null) {
+			String jwtToken = jwtService.createJwtToken(logInRequest);
+			if(teacherApplicant.getCurrentStatus().equalsIgnoreCase("employee")) {
+				String message = "Application approved. Please Login to teacher portal.";
+				return new TeacherApplicantLoginResponse(teacherApplicant, jwtToken, message);
+			}
+			else {
+				String message = "Application Submitted Successfully. Please wait until approved.";
+				return new TeacherApplicantLoginResponse(teacherApplicant, jwtToken, message);
+			}
+		}else {
+			return new TeacherApplicantLoginResponse(teacherApplicant, null, "Email not registered.");
 		}
-		else {
-			String message = "Application Submitted Successfully. Please wait until approved.";
-			return new TeacherApplicantLoginResponse(teacherApplicant, jwtToken, message);
-		}
-		
 	}
 	
-	public TeacherApplicant teacherApplicantDetails(Principal principal) {
-		return teacherApplicantRepository.findByEmail(principal.getName());
+	public TeacherApplicant teacherApplicantDetail(Principal principal) {
+		return teacherApplicantRepository.findByPersonalEmail(principal.getName());
 	}
 }

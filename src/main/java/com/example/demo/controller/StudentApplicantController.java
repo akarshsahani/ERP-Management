@@ -2,9 +2,12 @@ package com.example.demo.controller;
 
 import java.security.Principal;
 
+import javax.mail.MessagingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,19 +25,18 @@ public class StudentApplicantController {
 	@Autowired
 	private StudentApplicantServices studentApplicantServices;
 	
-	@PostMapping("/new-student-applicant")
-	public ResponseEntity<String> newStudentApplicant(@RequestBody StudentApplicantRequest studentApplicantRequest) {
-		String response = studentApplicantServices.newStudentApplicant(studentApplicantRequest);
-		return new ResponseEntity<String>(response, HttpStatus.CREATED);
+	@PostMapping("/apply/student")
+	public ResponseEntity<String> newStudentApplicant(@RequestBody StudentApplicantRequest studentApplicantRequest) throws MessagingException {
+		return new ResponseEntity<String>(studentApplicantServices.newStudentApplicant(studentApplicantRequest), HttpStatus.CREATED);
 	}
 	
-	@PostMapping({"/student-applicant-login"})
-//	@PreAuthorize("hasRole('APPLICANT')")
+	@PostMapping({"/login/student/applicant"})
 	public ResponseEntity<StudentApplicantLoginResponse> studentApplicantLogin(@RequestBody LogInRequest logInRequest) throws Exception{
 		return new ResponseEntity<StudentApplicantLoginResponse>(studentApplicantServices.studentApplicantLogin(logInRequest), HttpStatus.FOUND);
 	}
 	
 	@GetMapping({"/student-applicant-detail"})
+	@PreAuthorize("hasRole('EMPLOYEE')")
 	public ResponseEntity<StudentApplicant> studentApplicantDetails(Principal principal){
 		return new ResponseEntity<StudentApplicant>(studentApplicantServices.studentApplicantDetails(principal), HttpStatus.FOUND);
 	}

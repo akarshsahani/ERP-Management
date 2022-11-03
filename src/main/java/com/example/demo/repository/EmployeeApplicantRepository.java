@@ -11,7 +11,7 @@ import com.example.demo.model.EmployeeApplicant;
 @Repository
 public interface EmployeeApplicantRepository extends JpaRepository<EmployeeApplicant, Long>{
 
-	EmployeeApplicant findByEmail(String username);
+	EmployeeApplicant findByPersonalEmail(String username);
 	
 
 	@Modifying
@@ -21,5 +21,10 @@ public interface EmployeeApplicantRepository extends JpaRepository<EmployeeAppli
 
 
 	EmployeeApplicant findByEmployeeApplicantId(Long id);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE employee_applicant SET password = ?1 WHERE employee_applicant_id = ?2 ",  nativeQuery = true)
+	public void updatePassword(String password, Long id);
 
 }

@@ -1,7 +1,6 @@
 package com.example.demo.model;
 
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -43,7 +42,8 @@ public class TeacherApplicant {
 	private String currentAddress;
 	
 	@Column(unique = true)
-	protected String email;
+	protected String personalEmail;
+	
 	private String tenthPercentage;
 	private String tenthSchoolName;
 	private String tenthSchoolAddress;
@@ -68,16 +68,16 @@ public class TeacherApplicant {
 	private String password;
 	private String category;
 	private String designation;
-	private Map<String, String> otherQualifications; 
+//	private Set<Education> otherQualifications; 
 	private String currentStatus;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "TEACHER_APPLICANT_ROLE",
 	joinColumns = {
-			@JoinColumn(name = "teacherApplicantId", referencedColumnName = "teacherApplicantId")
+			@JoinColumn(name = "teacherApplicantId")
 	},
 	inverseJoinColumns = {
-			@JoinColumn(name = "ROLE_ID", referencedColumnName = "roleId")
+			@JoinColumn(name = "ROLE_ID")
 	})
 	private Set<Role> role;
 

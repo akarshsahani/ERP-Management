@@ -20,15 +20,18 @@ public class TeacherService {
 	private JwtService jwtService;
 	
 	public TeacherLoginResponse teacherLogin(LogInRequest logInRequest) throws Exception {
-		String jwtToken = jwtService.createJwtToken(logInRequest);
-		Teacher teacher = teacherRepository.findByEmail(logInRequest.getEmail());
-		String message = "Login Successful!";
-		
-		return new TeacherLoginResponse(teacher, jwtToken, message);
+		Teacher teacher = teacherRepository.findByOfficialEmail(logInRequest.getEmail());
+		if(teacher != null) {
+			String jwtToken = jwtService.createJwtToken(logInRequest);
+			String message = "Login Successful!";
+			return new TeacherLoginResponse(teacher, jwtToken, message);
+		}else {
+			return new TeacherLoginResponse(teacher, null, "Email not registered.");
+		}
 	}
 
 	
-	public Teacher teacherDetails(Principal principal) {
-		return teacherRepository.findByEmail(principal.getName());
+	public Teacher teacherDetail(Principal principal) {
+		return teacherRepository.findByOfficialEmail(principal.getName());
 	}
 }

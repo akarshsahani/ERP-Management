@@ -1,7 +1,5 @@
 package com.example.demo.dto.request;
 
-import java.util.Map;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -47,6 +45,6 @@ public class TeacherApplicantRequest {
 	private String mastersYearPassed;
 	private String password;
 	private String designation;
-	private Map<String, String> otherQualifications; 
+//	private Set<Education> otherQualifications; 
 
 }

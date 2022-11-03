@@ -13,8 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
-
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,7 +44,10 @@ public class Student {
 	private String currentAddress;
 	
 	@Column(unique = true)
-	protected String email;
+	protected String personalEmail;
+	
+	@Column(unique = true)
+	private String officialEmail;
 	
 	private String tenthPercentage;
 	private String tenthSchoolName;

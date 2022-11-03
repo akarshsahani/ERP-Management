@@ -15,14 +15,19 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import com.example.demo.dto.request.Education;
 import com.example.demo.model.Employee;
+import com.example.demo.model.EmployeeApplicant;
 import com.example.demo.model.Role;
 import com.example.demo.model.Student;
 import com.example.demo.model.StudentApplicant;
 import com.example.demo.model.Teacher;
+import com.example.demo.model.TeacherApplicant;
+import com.example.demo.repository.EmployeeApplicantRepository;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.repository.StudentApplicantRepository;
 import com.example.demo.repository.StudentRepository;
+import com.example.demo.repository.TeacherApplicantRepository;
 import com.example.demo.repository.TeacherRepository;
 
 @Component
@@ -38,7 +43,13 @@ public class Util {
 	private StudentRepository studentRepository;
 	
 	@Autowired
+	private EmployeeApplicantRepository employeeApplicantRepository;
+	
+	@Autowired
 	private EmployeeRepository employeeRepository;
+	
+	@Autowired
+	private TeacherApplicantRepository teacherApplicantRepository;
 	
 	@Autowired
 	private TeacherRepository teacherRepository;
@@ -122,6 +133,18 @@ public class Util {
 		}
 	}
 	
+	public String generateOfficialEmail(Long id, String category) {
+		if(category.equalsIgnoreCase("student")) {
+			return category.toLowerCase() + id + "@yopmail.com";
+		}else if(category.equalsIgnoreCase("teacher")) {
+			return category.toLowerCase() + id + "@yopmail.com";
+		}else if(category.equalsIgnoreCase("employee")){
+			return category.toLowerCase() + id + "@yopmail.com";
+		}else {
+			return null;
+		}
+	}
+	
 	
 	public String sendMailWithAttachment(String toEmail, String body, String subject, String attachment) throws MessagingException {
 		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -158,23 +181,23 @@ public class Util {
 	public String generatePasswordResetLink(String email, String currentStatus, String category) {
 		
 		if(category.equalsIgnoreCase("student") && currentStatus.equalsIgnoreCase("student")) {
-			Student data = studentRepository.findByEmail(email);
-			return "http://127.0.0.1:8080/student/student/" + data.getStudentId() + "/" + generateToken(email, data.getFirstName(), data.getRole());
+			Student data = studentRepository.findByPersonalEmail(email);
+			return "http://127.0.0.1:8080/reset-password/student/student/" + data.getStudentId() + "/" + generateToken(email, data.getFirstName(), data.getRole());
 		}else if (category.equalsIgnoreCase("student") && currentStatus.equalsIgnoreCase("applicant")) {
-			StudentApplicant data = studentApplicantRepository.findByEmail(email);
-			return "http://127.0.0.1:8080/student/applicant/" + data.getStudentApplicantId() + "/" + generateToken(email, data.getFirstName(), data.getRole());
+			StudentApplicant data = studentApplicantRepository.findByPersonalEmail(email);
+			return "http://127.0.0.1:8080/reset-password/student/applicant/" + data.getStudentApplicantId() + "/" + generateToken(email, data.getFirstName(), data.getRole());
 		}else if(category.equalsIgnoreCase("teacher") && currentStatus.equalsIgnoreCase("teacher")) {
-			Teacher data = teacherRepository.findByEmail(email);
-			return "http://127.0.0.1:8080/teacher/teacher/" + data.getTeacherId() + "/" + generateToken(email, data.getFirstName(), data.getRole());
+			Teacher data = teacherRepository.findByPersonalEmail(email);
+			return "http://127.0.0.1:8080/reset-password/teacher/teacher/" + data.getTeacherId() + "/" + generateToken(email, data.getFirstName(), data.getRole());
 		}else if(category.equalsIgnoreCase("teacher") && currentStatus.equalsIgnoreCase("applicant")) {
-			Teacher data = teacherRepository.findByEmail(email);
-			return "http://127.0.0.1:8080/teacher/applicant/" + data.getTeacherId() + "/" + generateToken(email, data.getFirstName(), data.getRole());
+			TeacherApplicant data = teacherApplicantRepository.findByPersonalEmail(email);
+			return "http://127.0.0.1:8080/reset-password/teacher/applicant/" + data.getTeacherApplicantId() + "/" + generateToken(email, data.getFirstName(), data.getRole());
 		}else if(category.equalsIgnoreCase("employee") && currentStatus.equalsIgnoreCase("employee")) {
-			Employee data = employeeRepository.findByEmail(email);
-			return "http://127.0.0.1:8080/employee/employee/" + data.getEmployeeId() + "/" + generateToken(email, data.getFirstName(), data.getRole());
+			Employee data = employeeRepository.findByPersonalEmail(email);
+			return "http://127.0.0.1:8080/reset-password/employee/employee/" + data.getEmployeeId() + "/" + generateToken(email, data.getFirstName(), data.getRole());
 		}else if (category.equalsIgnoreCase("employee") && currentStatus.equalsIgnoreCase("applicant")) {
-			Employee data = employeeRepository.findByEmail(email);
-			return "http://127.0.0.1:8080/employee/applicant/" + data.getEmployeeId() + "/" + generateToken(email, data.getFirstName(), data.getRole());
+			EmployeeApplicant data = employeeApplicantRepository.findByPersonalEmail(email);
+			return "http://127.0.0.1:8080/reset-password/employee/applicant/" + data.getEmployeeApplicantId() + "/" + generateToken(email, data.getFirstName(), data.getRole());
 		}else {
 			return null;
 		}
@@ -189,4 +212,16 @@ public class Util {
 		
 		return jwtUtil.createTokenForPasswordReset(claims, email);
 	}
+	
+	public Education addNewEducationalQualificatin(Education educationRequest) {
+		return Education.builder()
+						.level(educationRequest.getLevel())
+						.fieldOfStudy(educationRequest.getFieldOfStudy())
+						.schoolName(educationRequest.getSchoolName())
+						.schoolAddress(educationRequest.getSchoolAddress())
+						.grade(educationRequest.getGrade())
+						.passedYear(educationRequest.getPassedYear())
+						.build();
+	}
+	
 }

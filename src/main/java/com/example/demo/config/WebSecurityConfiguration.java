@@ -47,8 +47,10 @@ public class WebSecurityConfiguration {
 		httpSecurity.cors();
 		httpSecurity.csrf().disable()
 			.authorizeHttpRequests()
-			.antMatchers("/new-student-applicant", "/student-applicant-login").permitAll()
+			.antMatchers("/apply/**").permitAll()
+			.antMatchers("/login/**").permitAll()
 			.antMatchers("/authenticate").permitAll()
+			.antMatchers("/reset-password", "/reset-password/**").permitAll()
 			.antMatchers(HttpHeaders.ALLOW).permitAll()
 			.anyRequest().authenticated()
 			.and()

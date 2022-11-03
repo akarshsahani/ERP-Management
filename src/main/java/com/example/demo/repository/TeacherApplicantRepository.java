@@ -11,7 +11,7 @@ import com.example.demo.model.TeacherApplicant;
 @Repository
 public interface TeacherApplicantRepository extends JpaRepository<TeacherApplicant, Long> {
 
-	TeacherApplicant findByEmail(String username);
+	TeacherApplicant findByPersonalEmail(String username);
 	
 	@Modifying
 	@Transactional
@@ -19,5 +19,10 @@ public interface TeacherApplicantRepository extends JpaRepository<TeacherApplica
 	public void updateStatuOfTeacherApplicant(String currentStatus, Long id);
 
 	TeacherApplicant findByTeacherApplicantId(Long id);
+	
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE teacher_applicant SET password = ?1 WHERE teacher_applicant_id = ?2 ",  nativeQuery = true)
+	public void updatePassword(String password, Long id);
 
 }

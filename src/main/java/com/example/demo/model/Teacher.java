@@ -1,7 +1,6 @@
 package com.example.demo.model;
 
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -41,7 +40,9 @@ public class Teacher {
 	private String permanentAddress;
 	private String currentAddress;
 	@Column(unique = true)
-	protected String email;
+	protected String personalEmail;
+	@Column(unique = true)
+	private String officialEmail;
 	private String tenthPercentage;
 	private String tenthSchoolName;
 	private String tenthSchoolAddress;
@@ -62,7 +63,7 @@ public class Teacher {
 	private String mastersBranch;
 	private String mastersProgramme;
 	private String mastersYearPassed;
-	private Map<String, String> otherQualifications; 
+//	private Set<Education> otherQualifications; 
 	private LocalDate joiningDate;
 	private LocalDate appliedDate;
 	private String password;

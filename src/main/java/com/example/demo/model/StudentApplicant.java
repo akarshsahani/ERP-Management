@@ -39,7 +39,7 @@ public class StudentApplicant {
 	private String phoneNumber;
 	private String permanentAddress;
 	private String currentAddress;
-	public String email;
+	public String personalEmail;
 	private String tenthPercentage;
 	private String tenthSchoolName;
 	private String tenthSchoolAddress;

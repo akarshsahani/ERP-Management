@@ -64,21 +64,41 @@ public class EmployeeService {
 	
 	
 	public EmployeeLoginResponse employeeLogin(LogInRequest logInRequest) throws Exception {
-		String jwtToken = jwtService.createJwtToken(logInRequest);
-		Employee employee = employeeRepository.findByEmail(logInRequest.getEmail());
-		String message = "Login Successful!";
-		return new EmployeeLoginResponse(employee, jwtToken, message);
+		Employee employee = employeeRepository.findByOfficialEmail(logInRequest.getEmail());
+		if(employee != null) {
+			String jwtToken = jwtService.createJwtToken(logInRequest);
+			return new EmployeeLoginResponse(employee, jwtToken, "Login Successful!");
+		}else {
+			return new EmployeeLoginResponse(employee, null, "Email not registered.");
+		}
 	}
 	
-	public Employee employeeDetails(Principal principal) {
-		return employeeRepository.findByEmail(principal.getName());
+	public Employee employeeDetail(Principal principal) {
+		return employeeRepository.findByOfficialEmail(principal.getName());
 	}
-	
-	
-	
 	
 	public List<StudentApplicant> allStudentApplicant(){
 		return studentApplicantRepository.findAll();
+	}
+	
+	public List<TeacherApplicant> allTeacherApplicant(){
+		return teacherApplicantRepository.findAll();
+	}
+	
+	public List<EmployeeApplicant> allEmployeeApplicant(){
+		return employeeApplicantRepository.findAll();
+	}
+	
+	public List<Student> allStudent(){
+		return studentRepository.findAll();
+	}
+	
+	public List<Teacher> allTeacher(){
+		return teacherRepository.findAll();
+	}
+	
+	public List<Employee> allEmployee(){
+		return employeeRepository.findAll();
 	}
 	
 	public String approveStudentApplicant(Long id) throws MessagingException {
@@ -92,7 +112,7 @@ public class EmployeeService {
 						 .firstName(applicant.getFirstName())
 						 .middleName(applicant.getMiddleName())
 						 .lastName(applicant.getLastName())
-						 .email(applicant.getEmail())
+						 .personalEmail(applicant.getPersonalEmail())
 						 .dateOfBirth(applicant.getDateOfBirth())
 						 .phoneNumber(applicant.getPhoneNumber())
 						 .permanentAddress(applicant.getPermanentAddress())
@@ -118,23 +138,22 @@ public class EmployeeService {
 						 .build();
 		
 		studentRepository.save(student);
-		studentRepository.updateRegistrationNumber(util.generateRegistrationNumber(studentRepository.returnStudentId(applicant.getEmail()), applicant.getProgramme()), applicant.getEmail());
-		util.sendMailWithAttachment(applicant.getEmail(), "Your Application for admission got approved.", "Application approved", "C:/Users/Softsuave/Downloads/aa.png");
-		util.sendMailWithAttachment("akash.sahani@softsuave.org", "Your Application for admission got approved.", "Application approved", "C:/Users/Softsuave/Downloads/aa.png");
-		String passwordResetLink = util.generatePasswordResetLink(applicant.getEmail(), applicant.getCurrentStatus(), applicant.getCategory());
+		Long stdId = studentRepository.returnStudentId(applicant.getPersonalEmail());
+		studentRepository.updateRegistrationNumber(util.generateRegistrationNumber(stdId, applicant.getProgramme()), applicant.getPersonalEmail());
+		studentRepository.updateOfficialEmail(util.generateOfficialEmail(stdId, applicant.getCategory()), stdId);
+		util.sendMailWithAttachment(applicant.getPersonalEmail(), "Your Application for admission got approved.", "Application approved", "C:/Users/Softsuave/Downloads/aa.png");
+		String passwordResetLink = util.generatePasswordResetLink(applicant.getPersonalEmail(), applicant.getCurrentStatus(), applicant.getCategory());
 		if(passwordResetLink != null) {
-			util.sendMailWithAttachment(applicant.getEmail(), passwordResetLink, "Reset Password", "C:/Users/Softsuave/Downloads/aa.png");
-			util.sendMailWithAttachment("akash.sahani@softsuave.org", passwordResetLink, "Reset Password", "C:/Users/Softsuave/Downloads/aa.png");
+			util.sendMailWithAttachment(applicant.getPersonalEmail(), passwordResetLink, "Reset Password", "C:/Users/Softsuave/Downloads/aa.png");
 		}
 		return "Application approved. Now you can login to student login. Please use registered email to generate password";
 	}
 
 	public String approveEmployeeApplicant(Long id) throws MessagingException {
-		
 		employeeApplicantRepository.updateStatuOfEmployeeApplicant("employee", id);
 		EmployeeApplicant applicant = employeeApplicantRepository.findByEmployeeApplicantId(id);
 		
-		Role role = roleRepository.findByRoleName(applicant.getDesignation().toUpperCase());
+		Role role = roleRepository.findByRoleName("EMPLOYEE");
 		Set<Role> roles = new HashSet<>();
 		roles.add(role);
 		
@@ -143,14 +162,14 @@ public class EmployeeService {
 						   .firstName(applicant.getFirstName())
 						   .middleName(applicant.getMiddleName())
 						   .lastName(applicant.getLastName())
-						   .email(applicant.getEmail())
+						   .personalEmail(applicant.getPersonalEmail())
 						   .dateOfBirth(applicant.getDateOfBirth())
 						   .phoneNumber(applicant.getPhoneNumber())
 						   .permanentAddress(applicant.getPermanentAddress())
 						   .currentAddress(applicant.getCurrentAddress())
 						   .joiningDate(LocalDate.now())
 						   .appliedDate(applicant.getAppliedDate())
-						   .qualification(applicant.getQualification())
+//						   .qualification(applicant.getQualification())
 						   .category(applicant.getCategory())
 						   .designation(applicant.getDesignation())
 						   .currentStatus(applicant.getCurrentStatus())
@@ -158,12 +177,12 @@ public class EmployeeService {
 						   .build();
 		
 		employeeRepository.save(employee);
-		util.sendMailWithAttachment(applicant.getEmail(), "Your Application for employment got approved.", "Application approved", "C:/Users/Softsuave/Downloads/aa.png");
-		util.sendMailWithAttachment("akash.sahani@softsuave.org", "Your Application for employment got approved.", "Application approved", "C:/Users/Softsuave/Downloads/aa.png");
-		String passwordResetLink = util.generatePasswordResetLink(applicant.getEmail(), applicant.getCurrentStatus(), applicant.getCategory());
+		Long eepId = employeeRepository.returnEmployeeId(applicant.getPersonalEmail());
+		employeeRepository.updateOfficialEmail(util.generateOfficialEmail(eepId, applicant.getCategory()), eepId);
+		util.sendMailWithAttachment(applicant.getPersonalEmail(), "Your Application for employment got approved.", "Application approved", "C:/Users/Softsuave/Downloads/aa.png");
+		String passwordResetLink = util.generatePasswordResetLink(applicant.getPersonalEmail(), applicant.getCurrentStatus(), applicant.getCategory());
 		if(passwordResetLink != null) {
-			util.sendMailWithAttachment(applicant.getEmail(), passwordResetLink, "Reset Password", "C:/Users/Softsuave/Downloads/aa.png");
-			util.sendMailWithAttachment("akash.sahani@softsuave.org", passwordResetLink, "Reset Password", "C:/Users/Softsuave/Downloads/aa.png");
+			util.sendMailWithAttachment(applicant.getPersonalEmail(), passwordResetLink, "Reset Password", "C:/Users/Softsuave/Downloads/aa.png");
 		}
 		return "Application approved. Now you can login to employee login. Please use registered email to generate password";
 	}
@@ -182,7 +201,7 @@ public class EmployeeService {
 				 .firstName(applicant.getFirstName())
 				 .middleName(applicant.getMiddleName())
 				 .lastName(applicant.getLastName())
-				 .email(applicant.getEmail())
+				 .personalEmail(applicant.getPersonalEmail())
 				 .dateOfBirth(applicant.getDateOfBirth())
 				 .phoneNumber(applicant.getPhoneNumber())
 				 .permanentAddress(applicant.getPermanentAddress())
@@ -207,9 +226,9 @@ public class EmployeeService {
 				 .mastersBranch(applicant.getMastersBranch())
 				 .mastersProgramme(applicant.getMastersProgramme())
 				 .mastersYearPassed(applicant.getMastersYearPassed())
-				 .otherQualifications(applicant.getOtherQualifications())
+//				 .otherQualifications(applicant.getOtherQualifications())
 				 .joiningDate(LocalDate.now())
-				 .appliedDate(applicant.getAppliedDate())
+				 .appliedDate(applicant.getAppliedDate()) 
 				 .category(applicant.getCategory())
 				 .designation(applicant.getDesignation())
 				 .role(roles)
@@ -217,12 +236,12 @@ public class EmployeeService {
 				 .build();
 		
 		teacherRepository.save(teacher);
-		util.sendMailWithAttachment(applicant.getEmail(), "Your Application for teacher got approved.", "Application approved", "C:/Users/Softsuave/Downloads/aa.png");
-		util.sendMailWithAttachment("akash.sahani@softsuave.org", "Your Application for teacher got approved.", "Application approved", "C:/Users/Softsuave/Downloads/aa.png");
-		String passwordResetLink = util.generatePasswordResetLink(applicant.getEmail(), applicant.getCurrentStatus(), applicant.getCategory());
+		Long ttsId = teacherRepository.returnTeacherId(applicant.getPersonalEmail());
+		teacherRepository.updateOfficialEmail(util.generateOfficialEmail(ttsId, applicant.getCategory()), ttsId);
+		util.sendMailWithAttachment(applicant.getPersonalEmail(), "Your Application for teacher got approved.", "Application approved", "C:/Users/Softsuave/Downloads/aa.png");
+		String passwordResetLink = util.generatePasswordResetLink(applicant.getPersonalEmail(), applicant.getCurrentStatus(), applicant.getCategory());
 		if(passwordResetLink != null) {
-			util.sendMailWithAttachment(applicant.getEmail(), passwordResetLink, "Reset Password", "C:/Users/Softsuave/Downloads/aa.png");
-			util.sendMailWithAttachment("akash.sahani@softsuave.org", passwordResetLink, "Reset Password", "C:/Users/Softsuave/Downloads/aa.png");
+			util.sendMailWithAttachment(applicant.getPersonalEmail(), passwordResetLink, "Reset Password", "C:/Users/Softsuave/Downloads/aa.png");
 		}
 		return "Application approved. Now you can login to student login. Please use registered email to generate password";
 	}
