@@ -4,12 +4,17 @@ import java.security.Principal;
 import java.util.List;
 
 import javax.mail.MessagingException;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,19 +33,20 @@ import com.example.demo.service.EmployeeService;
 
 
 @Controller
+@Validated
 public class EmployeeController {
 
 	@Autowired
 	private EmployeeService employeeService;
 	
-	@PostMapping("/login/employee")
-	public ResponseEntity<EmployeeLoginResponse> loginEmployee(@RequestBody LogInRequest logInRequest) throws Exception{
+	@GetMapping("/login/employee")
+	public ResponseEntity<EmployeeLoginResponse> loginEmployee(@RequestBody @Valid LogInRequest logInRequest) throws Exception{
 		return new ResponseEntity<EmployeeLoginResponse>(employeeService.employeeLogin(logInRequest), HttpStatus.ACCEPTED);
 	}
 	
 	@GetMapping("/employee/detail")
 	@PreAuthorize("hasRole('EMPLOYEE')")
-	public ResponseEntity<Employee> employeeDetail(Principal principal){
+	public ResponseEntity<Employee> employeeDetail(@NotBlank @NotNull @NotEmpty Principal principal){
 		return new ResponseEntity<Employee>(employeeService.employeeDetail(principal), HttpStatus.FOUND);
 	}
 		
@@ -82,7 +88,7 @@ public class EmployeeController {
 	
 	@PostMapping("/{category}/approve")
 	@PreAuthorize("hasRole('EMPLOYEE')")
-	public ResponseEntity<String> approveTeacherApplicant(@RequestParam(value ="id") Long id, @PathVariable String category) throws MessagingException{
+	public ResponseEntity<String> approveTeacherApplicant(@RequestParam(value ="id") @NotBlank @NotNull @NotEmpty Long id, @PathVariable @NotBlank @NotNull @NotEmpty String category) throws MessagingException{
 		if(category.equalsIgnoreCase("teacher")) {
 			return new ResponseEntity<String>(employeeService.approveTeacherApplicant(id), HttpStatus.OK);
 		}else if(category.equalsIgnoreCase("student")){
