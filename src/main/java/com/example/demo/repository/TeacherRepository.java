@@ -15,6 +15,8 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 	
 	Teacher findByPersonalEmail(String email);
 	
+	Teacher findByTeacherId(Long teacherId);
+	
 	@Modifying
 	@Transactional
 	@Query(value = "UPDATE teacher SET password = ?1 WHERE teacher_id = ?2 ",  nativeQuery = true)
@@ -27,5 +29,8 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 	
 	@Query(value = "SELECT teacher_id FROM teacher WHERE personal_email = ?1", nativeQuery = true)
 	public Long returnTeacherId(String email);
+	
+	@Query(value = "SELECT first_name FROM course WHERE teacher_id = ?1", nativeQuery = true)
+	public String returnTeacherFirstName(Long teacherId);
 
 }

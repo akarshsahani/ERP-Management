@@ -2,6 +2,7 @@ package com.example.demo.util;
 
 import java.io.File;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -129,7 +130,7 @@ public class Util {
 				return "18" + "UE" + "IT" + str;
 			}
 		}else {
-			return "Cannot create registration number";
+			return null;
 		}
 	}
 	
@@ -224,4 +225,22 @@ public class Util {
 						.build();
 	}
 	
+	public String returnFullName(String firstName, String middleName, String lastName) {
+		if(middleName == null) {
+			return firstName + " " + lastName;
+		}else {
+			return firstName + " " + middleName + " " + lastName;
+		}
+	}
+	
+	public String returnMarksId(String registrationNumber, String courseCode) {
+		return registrationNumber + courseCode;
+	}
+	
+	public int getNumberOfDaysBetweenCreatedDateAndCurrentDate(String createdDate) {
+		LocalDate createdDateParsed = LocalDate.parse(createdDate);
+		LocalDate currDateAndTime = LocalDate.now();
+		Period period = Period.between(currDateAndTime, createdDateParsed);
+		return Math.abs(period.getDays());
+	}
 }

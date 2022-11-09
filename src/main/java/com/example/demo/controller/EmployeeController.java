@@ -88,7 +88,7 @@ public class EmployeeController {
 	
 	@PostMapping("/{category}/approve")
 	@PreAuthorize("hasRole('EMPLOYEE')")
-	public ResponseEntity<String> approveTeacherApplicant(@RequestParam(value ="id") @NotBlank @NotNull @NotEmpty Long id, @PathVariable @NotBlank @NotNull @NotEmpty String category) throws MessagingException{
+	public ResponseEntity<String> approveTeacherApplicant(@RequestParam(value ="id") @NotNull Long id, @PathVariable @NotBlank @NotNull @NotEmpty String category) throws MessagingException{
 		if(category.equalsIgnoreCase("teacher")) {
 			return new ResponseEntity<String>(employeeService.approveTeacherApplicant(id), HttpStatus.OK);
 		}else if(category.equalsIgnoreCase("student")){

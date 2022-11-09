@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Set;
 
 import javax.mail.MessagingException;
+import javax.management.RuntimeErrorException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.request.LogInRequest;
 import com.example.demo.dto.response.EmployeeLoginResponse;
@@ -32,6 +35,7 @@ import com.example.demo.util.Util;
 
 
 @Service
+//@Transactional
 public class EmployeeService {
 
 	@Autowired
@@ -101,6 +105,7 @@ public class EmployeeService {
 		return employeeRepository.findAll();
 	}
 	
+	@Transactional
 	public String approveStudentApplicant(Long id) throws MessagingException {
 		Student student = new Student();
 		Role role = roleRepository.findByRoleName("student");
@@ -146,9 +151,12 @@ public class EmployeeService {
 		if(passwordResetLink != null) {
 			util.sendMailWithAttachment(applicant.getPersonalEmail(), passwordResetLink, "Reset Password", "C:/Users/Softsuave/Downloads/aa.png");
 		}
-		return "Application approved. Now you can login to student login. Please use registered email to generate password";
+//		return "Application approved. Now you can login to student login. Please use registered email to generate password";
+		throw new RuntimeErrorException(null);
+//		return null;
 	}
 
+	@Transactional(propagation = Propagation.REQUIRED)
 	public String approveEmployeeApplicant(Long id) throws MessagingException {
 		employeeApplicantRepository.updateStatuOfEmployeeApplicant("employee", id);
 		EmployeeApplicant applicant = employeeApplicantRepository.findByEmployeeApplicantId(id);
@@ -181,12 +189,19 @@ public class EmployeeService {
 		employeeRepository.updateOfficialEmail(util.generateOfficialEmail(eepId, applicant.getCategory()), eepId);
 		util.sendMailWithAttachment(applicant.getPersonalEmail(), "Your Application for employment got approved.", "Application approved", "C:/Users/Softsuave/Downloads/aa.png");
 		String passwordResetLink = util.generatePasswordResetLink(applicant.getPersonalEmail(), applicant.getCurrentStatus(), applicant.getCategory());
+//		String passwordResetLink = util.generatePasswordResetLink(applicant.getPersonalEmail(), null, null);
+//		throw new RuntimeErrorException(null);
 		if(passwordResetLink != null) {
 			util.sendMailWithAttachment(applicant.getPersonalEmail(), passwordResetLink, "Reset Password", "C:/Users/Softsuave/Downloads/aa.png");
+//			return "Application approved. Now you can login to employee login. Please use registered email to generate password";
+			throw new RuntimeErrorException(null, "Something went wrong");
+		}else {
+			throw new RuntimeErrorException(null, "Something went wrong");
 		}
-		return "Application approved. Now you can login to employee login. Please use registered email to generate password";
+		
 	}
 	
+	@Transactional
 	public String approveTeacherApplicant (Long id) throws MessagingException {
 		
 		teacherApplicantRepository.updateStatuOfTeacherApplicant("teacher", id);

@@ -34,4 +34,6 @@ public class TeacherService {
 	public Teacher teacherDetail(Principal principal) {
 		return teacherRepository.findByOfficialEmail(principal.getName());
 	}
+	
+	
 }
